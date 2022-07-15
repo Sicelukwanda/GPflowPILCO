@@ -12,9 +12,10 @@ __all__ = (
   "PathwiseGPR",
   "SVGP",
   "PathwiseSVGP",
+  "MultivariateGPR"
 )
 
-
+from gpflow_pilco.models.multivariate_gpr import *
 from gpflow_pilco.models.core import *
 from gpflow_pilco.models import initializers, mean_functions, priors
 from gpflow_pilco.models.gpr import *
