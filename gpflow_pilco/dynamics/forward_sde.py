@@ -52,8 +52,12 @@ def _forward(x: GaussianMoments,
              noise: Union[Callable, NoneType],
              policy: Callable,
              _):
-  match_policy = moment_matching(x, policy)
-  match_drift = moment_matching(match_policy.joint(), drift)
+  # define moments yourself if policy is deterministic
+  match_policy = moment_matching(x, policy) # p(u_{t-1})
+
+  #                              p(x_{t-1}, u_{t-1})
+  #                             /                  \
+  match_drift = moment_matching(match_policy.joint(), drift) # p(delta_t)
 
   # Approx. Cov(x, f) by Cov(x, d) Cov(d, d)^{-1} Cov(d, f) where d = (x, u)
   if match_drift.cross[1]:  # is Cov(d, f) premultiplied by Cov(d, d)^{-1}?
@@ -63,7 +67,7 @@ def _forward(x: GaussianMoments,
   else:
     cross = match_drift.cross_covariance()[..., :x.mean().shape[-1], :], False
 
-  chain_match_drift = GaussianMatch(x=x, y=match_drift.y, cross=cross)
+  chain_match_drift = GaussianMatch(x=x, y=match_drift.y, cross=cross) # SummedGaussian
   match_noise = None if (noise is None) else moment_matching(x, noise)
   return chain_match_drift, match_noise
 

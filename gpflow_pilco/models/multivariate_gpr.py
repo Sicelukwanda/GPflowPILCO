@@ -49,7 +49,10 @@ class MultivariateGPR(GPModel, InternalDataTrainingLossMixin):
         Kmm = tf.reshape(Kmm, shape = (M * P, M * P)) # [M*P, M*P]
         # add jitter to the diagional
         Kmm += default_jitter() * tf.eye(M * P, dtype=Kmm.dtype)
-        Kmm += tf.linalg.diag(tf.fill([M * P], self.likelihood.variance)) # [M*P, M*P]
+        if len(self.likelihood.variance.shape) > 0:
+            Kmm += tf.linalg.diag(tf.repeat(self.likelihood.variance,M)) # [M*P, M*P]
+        else:
+            Kmm += tf.linalg.diag(tf.fill([M * P], self.likelihood.variance)) # [M*P, M*P]
         L = tf.linalg.cholesky(Kmm)  # [M*P, M*P]
 
         # [R,] log-likelihoods for each independent dimension of Y
@@ -76,7 +79,10 @@ class MultivariateGPR(GPModel, InternalDataTrainingLossMixin):
         Kmn = tf.reshape(Kmn, (M * P, N, P)) # [M*P, N, P]
         err = tf.reshape(err, shape = (M * P, 1)) # [M*P, 1]
         Kmm = tf.reshape(Kmm, (M * P, M * P)) # [M*P, M*P]
-        Kmm += tf.linalg.diag(tf.fill([M * P], self.likelihood.variance)) # [M*P, M*P]
+        if len(self.likelihood.variance.shape) > 0:
+            Kmm += tf.linalg.diag(tf.repeat(self.likelihood.variance,M)) # [M*P, M*P]
+        else:
+            Kmm += tf.linalg.diag(tf.fill([M * P], self.likelihood.variance)) # [M*P, M*P]
         # add jitter to the diagional
         Kmm += default_jitter() * tf.eye(M * P, dtype=Kmm.dtype)
 
