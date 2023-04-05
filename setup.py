@@ -6,7 +6,7 @@ requirements = (
   'gym>=0.17.3',
   'numpy',
   'scipy',
-  'sklearn',
+  'scikit-learn',
   'tensorflow==2.9.0',
   'tensorflow-probability==0.16.0',
   'tqdm',
